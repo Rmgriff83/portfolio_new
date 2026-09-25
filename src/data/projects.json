@@ -1,0 +1,91 @@
+[
+  {
+    "id": "max-access-toolbar",
+    "name": "Max Access Accessibility Toolbar",
+    "desc": "Embeddable widget for WCAG compliance",
+    "image": "",
+    "imageAlt": "",
+    "link": "",
+    "role": "Front-end & back-end development",
+    "skills": ["JavaScript", "WCAG", "Accessibility"],
+    "tags": ["JavaScript", "Vue", "Laravel", "PHP", "MySQL", "Accessibility", "WCAG", "UX/UI", "Git"],
+    "tabs": [
+      { "label": "Overview", "paras": ["An embeddable accessibility toolbar that site owners add with a single script. Visitors get controls for contrast, text size, spacing and other adjustments that support WCAG compliance.", "Add the problem it solved, how it was built, and the results here."] },
+      { "label": "Architecture", "paras": ["How the embed script, the Vue front end and the Laravel API fit together. Add details here."] },
+      { "label": "Accessibility", "paras": ["Which WCAG criteria the toolbar addresses and how each control works. Add details here."] }
+    ]
+  },
+  {
+    "id": "max-access-wordpress-plugin",
+    "name": "Max Access Custom WordPress Plugin",
+    "desc": "Built for the overlay widget",
+    "image": "",
+    "imageAlt": "",
+    "link": "",
+    "role": "Plugin development",
+    "skills": ["PHP", "WordPress", "JavaScript"],
+    "tags": ["PHP", "WordPress", "JavaScript", "MySQL", "Accessibility", "Git"],
+    "tabs": [
+      { "label": "Overview", "paras": ["A custom WordPress plugin that installs and configures the Max Access overlay widget from the WordPress dashboard.", "Add details on licensing, settings, and how the plugin talks to the widget here."] },
+      { "label": "Plugin Architecture", "paras": ["Hooks, settings storage and how the plugin loads the widget. Add details here."] }
+    ]
+  },
+  {
+    "id": "specht-properties",
+    "name": "Specht Properties",
+    "desc": "Full WordPress site build",
+    "image": "",
+    "imageAlt": "",
+    "link": "",
+    "role": "Design & development",
+    "skills": ["WordPress", "PHP", "UX/UI"],
+    "tags": ["WordPress", "PHP", "HTML5", "CSS3", "JavaScript", "UX/UI", "Figma"],
+    "tabs": [
+      { "label": "Overview", "paras": ["A full WordPress site build for Specht Properties, from layout and design through custom theme development.", "Add scope, key features, and outcomes here."] },
+      { "label": "Design Decisions", "paras": ["Layout, typography and content structure choices. Add details here."] }
+    ]
+  },
+  {
+    "id": "skeies-jewelers",
+    "name": "Skeie's Jewelers",
+    "desc": "E-commerce website redesign",
+    "image": "",
+    "imageAlt": "",
+    "link": "",
+    "role": "Webmaster / Web Developer",
+    "skills": ["Shopify", "SEO", "Google Analytics"],
+    "tags": ["Shopify", "HTML5", "CSS3", "JavaScript", "SEO", "Google Analytics", "Google Ads", "UX/UI"],
+    "tabs": [
+      { "label": "Overview", "paras": ["A redesign of Skeie's Jewelers' e-commerce site on Shopify: layouts, features and functionality tested across browsers and devices.", "SEO work and analytics reviews guided ongoing optimization. Add specific results here."] },
+      { "label": "SEO & Analytics", "paras": ["Search visibility work and what the analytics showed. Add details here."] }
+    ]
+  },
+  {
+    "id": "electronic-literature",
+    "name": "Electronic Literature",
+    "desc": "Site rebuild project",
+    "image": "",
+    "imageAlt": "",
+    "link": "",
+    "role": "Development",
+    "skills": ["HTML5", "CSS3", "JavaScript"],
+    "tags": ["HTML5", "CSS3", "JavaScript", "UX/UI"],
+    "tabs": [
+      { "label": "Overview", "paras": ["A rebuild of an electronic literature site.", "Add the background, approach, and outcome here."] }
+    ]
+  },
+  {
+    "id": "project-six",
+    "name": "Project Six",
+    "desc": "Short project blurb",
+    "image": "",
+    "imageAlt": "",
+    "link": "",
+    "role": "Role",
+    "skills": ["Vue", "Laravel", "MySQL"],
+    "tags": ["Vue", "Laravel", "MySQL"],
+    "tabs": [
+      { "label": "Overview", "paras": ["Add a detailed description of this project here."] }
+    ]
+  }
+]

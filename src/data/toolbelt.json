@@ -1,0 +1,5 @@
+[
+  { "title": "Development", "chipBg": "#dbeafe", "chipInk": "#1d4ed8", "items": ["HTML5", "CSS3", "JavaScript", "PHP", "Laravel", "Vue", "MySQL", "Linux", "Docker", "Kubernetes", "Accessibility", "WordPress", "Shopify"] },
+  { "title": "Design", "chipBg": "#f3e8ff", "chipInk": "#7e22ce", "items": ["UX/UI", "Graphic Design", "Photoshop", "Illustrator", "After Effects", "Premiere Pro", "XD", "Figma"] },
+  { "title": "Workflow", "chipBg": "#dcfce7", "chipInk": "#15803d", "items": ["Git", "AWS", "Cloud Storage", "Google Ads", "Google Analytics", "Stripe", "Authorize.net", "WooCommerce", "Slack", "Zoom", "Basecamp"] }
+]
