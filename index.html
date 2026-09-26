@@ -13,9 +13,11 @@
 </head>
 <body>
 
+<a class="skip-link" href="#main">Skip to main content</a>
+
 <header data-topbar="" style="position:fixed;top:0;left:0;right:0;z-index:40;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:14px clamp(20px,5vw,72px) 14px clamp(56px,14vw,200px);background:rgba(255,255,255,.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid #e5e7eb;transform:translateY(-100%)">
-  <a href="#intro" data-go="0" aria-label="Ross Griffus" style="display:flex;align-items:center;gap:10px;font:700 17px/1 'Inter';letter-spacing:-.01em"><span style="width:30px;height:30px;background:#5eead4;display:grid;place-items:center;font:700 10px/1.2 'JetBrains Mono',monospace;color:#1f2937;text-align:center">R<br>G</span></a>
-  <nav style="display:flex;gap:clamp(14px,3vw,36px);font-size:15px;font-weight:500">
+  <a href="#intro" data-go="0" aria-label="Ross Griffus, back to top" style="display:flex;align-items:center;gap:10px;font:700 17px/1 'Inter';letter-spacing:-.01em"><span style="width:30px;height:30px;background:#5eead4;display:grid;place-items:center;font:700 10px/1.2 'JetBrains Mono',monospace;color:#1f2937;text-align:center">R<br>G</span></a>
+  <nav aria-label="Primary" style="display:flex;gap:clamp(14px,3vw,36px);font-size:15px;font-weight:500">
     <a href="#projects" data-go="1">Projects</a>
     <a href="#about" data-go="2">About</a>
     <a href="#contact" data-go="4">Resume</a>
@@ -24,34 +26,35 @@
 
 <div data-rail-wrap="" style="position:fixed;left:clamp(14px,3vw,44px);top:0;bottom:0;width:120px;z-index:20;pointer-events:none">
   <div data-rail="" style="position:absolute;left:0;top:14vh;bottom:14vh;width:14px">
-    <div style="position:absolute;left:6px;top:0;bottom:0;width:2px;background:repeating-linear-gradient(#d1d5db 0 5px,transparent 5px 10px)"></div>
-    <div data-rail-fill="" style="position:absolute;left:6px;top:0;bottom:0;width:2px;background:#9ca3af;transform-origin:top;transform:scaleY(0)"></div>
-    <svg data-rail-svg="" width="14" height="100%" style="position:absolute;left:0;top:0;overflow:visible"><path data-rail-path="" d="M7 0 L7 600" fill="none" stroke="none"></path></svg>
-    <!-- rail stops rendered from config.labels -->
-    <div data-rail-dot="" style="position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:#3b82f6;box-shadow:0 0 0 6px rgba(59,130,246,.18)"></div>
+    <div aria-hidden="true" style="position:absolute;left:6px;top:0;bottom:0;width:2px;background:repeating-linear-gradient(#d1d5db 0 5px,transparent 5px 10px)"></div>
+    <div data-rail-fill="" aria-hidden="true" style="position:absolute;left:6px;top:0;bottom:0;width:2px;background:#9ca3af;transform-origin:top;transform:scaleY(0)"></div>
+    <svg data-rail-svg="" aria-hidden="true" focusable="false" width="14" height="100%" style="position:absolute;left:0;top:0;overflow:visible"><path data-rail-path="" d="M7 0 L7 600" fill="none" stroke="none"></path></svg>
+    <nav data-rail-nav="" aria-label="Section progress"><!-- rail stops rendered from config.labels --></nav>
+    <div data-rail-dot="" aria-hidden="true" style="position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:#2563eb;box-shadow:0 0 0 6px rgba(37,99,235,.18)"></div>
   </div>
 </div>
 
-<main style="padding-left:clamp(56px,14vw,200px);padding-right:clamp(20px,5vw,72px)">
+<main id="main" tabindex="-1">
+<div class="main-pad" style="padding-left:clamp(56px,14vw,200px);padding-right:clamp(20px,5vw,72px)">
 
-<section data-sec="0" id="intro" style="min-height:100vh;background:#eff6ff;margin:0 calc(-1 * clamp(20px,5vw,72px)) 0 calc(-1 * clamp(56px,14vw,200px));padding-left:clamp(56px,14vw,200px);padding-right:clamp(20px,5vw,72px);scroll-snap-align:start;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding-top:32px;padding-bottom:56px;box-sizing:border-box">
-  <canvas data-grid="" style="position:absolute;top:0;bottom:0;left:0;right:0;width:100%;height:100%;pointer-events:none"></canvas>
+<section data-sec="0" id="intro" aria-labelledby="intro-title" style="min-height:100vh;background:#eff6ff;margin:0 calc(-1 * clamp(20px,5vw,72px)) 0 calc(-1 * clamp(56px,14vw,200px));padding-left:clamp(56px,14vw,200px);padding-right:clamp(20px,5vw,72px);scroll-snap-align:start;position:relative;display:flex;flex-direction:column;justify-content:space-between;padding-top:32px;padding-bottom:56px;box-sizing:border-box">
+  <canvas data-grid="" aria-hidden="true" style="position:absolute;top:0;bottom:0;left:0;right:0;width:100%;height:100%;pointer-events:none"></canvas>
   <header style="position:relative;display:flex;justify-content:space-between;align-items:center;gap:24px">
-    <a href="#intro" style="display:flex;align-items:center;gap:12px;font:700 20px/1 'Inter';letter-spacing:-.01em"><span style="width:36px;height:36px;background:#5eead4;display:grid;place-items:center;font:700 11px/1.2 'JetBrains Mono',monospace;color:#1f2937;text-align:center">R<br>G</span>Ross Griffus</a>
-    <a href="https://github.com/Rmgriff83" target="_blank" rel="noopener" aria-label="Ross Griffus on GitHub" class="hv-ink" style="display:block;color:#6b7280;transition:color .2s ease"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" style="display:block" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3"></path></svg></a>
+    <a href="#intro" style="display:flex;align-items:center;gap:12px;font:700 20px/1 'Inter';letter-spacing:-.01em"><span aria-hidden="true" style="width:36px;height:36px;background:#5eead4;display:grid;place-items:center;font:700 11px/1.2 'JetBrains Mono',monospace;color:#1f2937;text-align:center">R<br>G</span>Ross Griffus</a>
+    <a href="https://github.com/Rmgriff83" target="_blank" rel="noopener" aria-label="Ross Griffus on GitHub (opens in a new tab)" class="hv-ink" style="display:block;color:#6b7280;transition:color .2s ease"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" style="display:block" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3"></path></svg></a>
   </header>
   <div data-hero-clip="" style="position:relative;display:grid;grid-template-columns:minmax(0,1fr) clamp(240px,28vw,420px);grid-template-areas:&quot;name photo&quot; &quot;desc photo&quot; &quot;desc btns&quot;;column-gap:clamp(20px,4vw,64px);row-gap:14px;margin-left:calc(-1 * max(0px, calc(clamp(56px,14vw,200px) - clamp(14px,3vw,44px) - 47px)));padding-left:max(0px, calc(clamp(56px,14vw,200px) - clamp(14px,3vw,44px) - 47px))">
     <div style="grid-area:name;align-self:end;min-width:0;display:flex;flex-direction:column;gap:18px">
-      <h1 data-hero-name="" data-hero-left="" style="margin:0;font:400 clamp(64px,11.5vw,176px)/.76 'Bebas Neue',sans-serif;letter-spacing:.01em">Ross<br>Griffus</h1>
-      <h2 data-hero-left="" style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:700 clamp(28px,3.6vw,52px)/1.1 'Inter';letter-spacing:-.02em">
-          <span data-marker="" style="position:absolute;left:-.12em;right:-.12em;bottom:.05em;height:.5em;background:#5eead4;border-radius:2px;transform:scaleX(0)"></span>
+      <h1 id="intro-title" data-hero-name="" data-hero-left="" style="margin:0;font:400 clamp(64px,11.5vw,176px)/.76 'Bebas Neue',sans-serif;letter-spacing:.01em">Ross <br>Griffus</h1>
+      <p data-hero-left="" style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:700 clamp(28px,3.6vw,52px)/1.1 'Inter';letter-spacing:-.02em">
+          <span data-marker="" aria-hidden="true" style="position:absolute;left:-.12em;right:-.12em;bottom:.05em;height:.5em;background:#5eead4;border-radius:2px;transform:scaleX(0)"></span>
           <span style="position:relative">Software Engineer</span>
-        </h2>
+        </p>
     </div>
     <div data-hero-right="" data-hero-photo="" style="grid-area:photo;position:relative;min-height:140px;border-radius:10px;overflow:hidden;background:#dbeafe;box-shadow:0 10px 28px rgba(31,41,55,.12)">
       <img data-hero-img="" src="/assets/ross-hero.png" alt="Ross holding up a painting of a rooster" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:80% 55%;display:block;filter:none;transition:filter .4s ease">
       <!-- Brand duotone overlays are added by render.js when config.heroFilter === 'Brand duotone' -->
-        <a href="https://www.linkedin.com/in/ross-griffus-65905a7b/" target="_blank" rel="noopener" aria-label="Ross Griffus on LinkedIn" class="hv-li-hero" style="position:absolute;right:12px;bottom:12px;width:40px;height:40px;display:block;color:#0a66c2;filter:drop-shadow(0 2px 6px rgba(31,41,55,.35));transition:transform .2s ease">
+        <a href="https://www.linkedin.com/in/ross-griffus-65905a7b/" target="_blank" rel="noopener" aria-label="Ross Griffus on LinkedIn (opens in a new tab)" class="hv-li-hero" style="position:absolute;right:12px;bottom:12px;width:40px;height:40px;display:block;color:#0a66c2;filter:drop-shadow(0 2px 6px rgba(31,41,55,.35));transition:transform .2s ease">
           <svg width="40" height="40" style="display:block" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="1" y="1" width="22" height="22" fill="#ffffff"></rect><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg>
         </a>
     </div>
@@ -62,19 +65,19 @@
         </div>
     </div>
     <div data-hero-right="" style="grid-area:btns;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.3fr);gap:10px">
-      <a href="#about" data-go="2" class="hv-outline" style="display:flex;align-items:center;justify-content:center;background:#ffffff;border:1.5px solid #3b82f6;color:#3b82f6;padding:12px 26px;border-radius:8px;font-size:15px;font-weight:600">About</a>
+      <a href="#about" data-go="2" class="hv-outline" style="display:flex;align-items:center;justify-content:center;background:#ffffff;border:1.5px solid #2563eb;color:#2563eb;padding:12px 26px;border-radius:8px;font-size:15px;font-weight:600">About</a>
       <div style="display:flex;flex-direction:column;gap:10px">
-          <a href="#projects" data-go="1" class="hv-primary" style="background:#3b82f6;color:#ffffff;padding:13px 22px;border-radius:8px;font-size:15px;font-weight:600;text-align:center">Recent Projects</a>
-          <a href="#contact" data-go="4" class="hv-outline" style="border:1.5px solid #3b82f6;color:#3b82f6;padding:12px 22px;border-radius:8px;font-size:15px;font-weight:600;text-align:center">Resume</a>
+          <a href="#projects" data-go="1" class="hv-primary" style="background:#2563eb;color:#ffffff;padding:13px 22px;border-radius:8px;font-size:15px;font-weight:600;text-align:center">Recent Projects</a>
+          <a href="#contact" data-go="4" class="hv-outline" style="border:1.5px solid #2563eb;color:#2563eb;padding:12px 22px;border-radius:8px;font-size:15px;font-weight:600;text-align:center">Resume</a>
         </div>
     </div>
   </div>
 </section>
 
-</main>
+</div>
 
-<section data-sec="1" id="projects" style="width:100%;height:100vh;position:relative;box-sizing:border-box;overflow:hidden;background:#f9fafb">
-  <div data-branch="" style="position:absolute;top:32vh;left:calc(clamp(14px,3vw,44px) + 7px);right:clamp(20px,5vw,72px);height:14px;margin-top:-7px;z-index:2;pointer-events:none">
+<section data-sec="1" id="projects" aria-labelledby="projects-title" style="width:100%;height:100vh;position:relative;box-sizing:border-box;overflow:hidden;background:#f9fafb">
+  <div data-branch="" aria-hidden="true" style="position:absolute;top:32vh;left:calc(clamp(14px,3vw,44px) + 7px);right:clamp(20px,5vw,72px);height:14px;margin-top:-7px;z-index:2;pointer-events:none">
   <div style="position:absolute;left:0;right:0;top:6px;height:2px;background:repeating-linear-gradient(90deg,#d1d5db 0 5px,transparent 5px 10px)"></div>
   <div data-branch-fill="" style="position:absolute;left:0;right:0;top:6px;height:2px;background:#9ca3af;transform-origin:left;transform:scaleX(0)"></div>
   <!-- branch stops rendered from projects.json -->
@@ -82,13 +85,13 @@
 </div>
   <div style="position:absolute;left:clamp(56px,14vw,200px);right:0;bottom:calc(68vh + 26px);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;padding-right:clamp(20px,5vw,72px)">
     <div style="display:flex;flex-direction:column;gap:14px">
-      <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7280">01 · WORK</span>
-      <h2 style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 clamp(52px,7vw,108px)/.95 'Bebas Neue',sans-serif;letter-spacing:.01em">
-        <span data-marker="" style="position:absolute;left:-.08em;right:-.08em;bottom:.06em;height:.42em;background:#5eead4;border-radius:3px;transform:scaleX(0)"></span>
+      <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#646c7a">01 · WORK</span>
+      <h2 id="projects-title" style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 clamp(52px,7vw,108px)/.95 'Bebas Neue',sans-serif;letter-spacing:.01em">
+        <span data-marker="" aria-hidden="true" style="position:absolute;left:-.08em;right:-.08em;bottom:.06em;height:.42em;background:#5eead4;border-radius:3px;transform:scaleX(0)"></span>
         <span style="position:relative">Recent Projects</span>
       </h2>
     </div>
-    <div data-reveal="" style="display:flex;align-items:center;gap:14px;font:500 12px 'JetBrains Mono',monospace;color:#6b7280;letter-spacing:.06em">
+    <div data-reveal="" aria-hidden="true" style="display:flex;align-items:center;gap:14px;font:500 12px 'JetBrains Mono',monospace;color:#6b7280;letter-spacing:.06em">
       <span><span data-hcount="" style="color:#1f2937">01</span> / <span data-ptotal="">00</span></span>
       <span>SCROLL →</span>
     </div>
@@ -100,42 +103,42 @@
   </div>
 </section>
 
-<main style="padding-left:clamp(56px,14vw,200px);padding-right:clamp(20px,5vw,72px)">
+<div class="main-pad" style="padding-left:clamp(56px,14vw,200px);padding-right:clamp(20px,5vw,72px)">
 
-<section data-sec="2" id="about" style="min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;padding:64px 0;box-sizing:border-box">
+<section data-sec="2" id="about" aria-labelledby="about-title" style="min-height:100vh;scroll-snap-align:start;display:flex;align-items:center;padding:64px 0;box-sizing:border-box">
   <div data-about-grid="" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:clamp(32px,6vw,96px);align-items:center;width:100%">
     <div data-reveal="" data-about-photo="" style="position:relative;max-width:min(420px,70vw);width:100%;margin-left:0">
-      <img src="/assets/ross.jpg" alt="Ross Griffus" style="display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px;filter:grayscale(.15)">
+      <img src="/assets/ross.jpg" alt="Portrait of Ross Griffus" style="display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:4px;filter:grayscale(.15)">
       <span data-about-badge="" style="position:absolute;left:14px;right:auto;bottom:14px;background:#f9fafb;padding:6px 10px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.06em">EUGENE, OR</span>
     </div>
     <div data-about-text="" style="position:relative;z-index:1;display:flex;flex-direction:column;gap:26px;margin-top:0">
-      <div style="display:flex;flex-direction:column;gap:14px">
-        <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7280">02 · ABOUT</span>
-        <h2 style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 clamp(56px,8vw,120px)/.95 'Bebas Neue',sans-serif;letter-spacing:.01em">
-          <span data-marker="" style="position:absolute;left:-.08em;right:-.08em;bottom:.06em;height:.42em;background:#5eead4;border-radius:3px;transform:scaleX(0)"></span>
-          <span style="position:relative">About Me 👋</span>
+      <div data-about-head="" style="display:flex;flex-direction:column;gap:14px">
+        <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#646c7a">02 · ABOUT</span>
+        <h2 id="about-title" style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 clamp(56px,8vw,120px)/.95 'Bebas Neue',sans-serif;letter-spacing:.01em">
+          <span data-marker="" aria-hidden="true" style="position:absolute;left:-.08em;right:-.08em;bottom:.06em;height:.42em;background:#5eead4;border-radius:3px;transform:scaleX(0)"></span>
+          <span style="position:relative">About Me <span aria-hidden="true">👋</span></span>
         </h2>
       </div>
       <p data-reveal="" data-about-p="" style="margin:0;font-size:19px;line-height:1.55;color:#374151;max-width:560px;text-wrap:pretty">I'm a software engineer with a broad skill set and a strong drive to build things that make an impact. In fast-moving startup environments I've taken on enterprise-level projects that push both design and functionality. I'm currently a Full Stack Developer at Growth Dynamics in Eugene, Oregon.</p>
-      <div data-reveal="" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;border-top:1.5px solid #1f2937;padding-top:20px;max-width:560px">
-        <div style="display:flex;flex-direction:column;gap:6px"><span style="font:800 clamp(32px,3.6vw,48px)/1 'Inter';letter-spacing:-.03em"><span data-count="10">0</span>+</span><span style="font-size:14px;color:#4b5563;line-height:1.35">Vue.js frontends maintained</span></div>
-        <div style="display:flex;flex-direction:column;gap:6px"><span style="font:800 clamp(32px,3.6vw,48px)/1 'Inter';letter-spacing:-.03em"><span data-count="1">0</span>M+</span><span style="font-size:14px;color:#4b5563;line-height:1.35">API requests to Laravel backends I built</span></div>
-        <div style="display:flex;flex-direction:column;gap:6px"><span style="font:800 clamp(32px,3.6vw,48px)/1 'Inter';letter-spacing:-.03em"><span data-count="5">0</span> yrs</span><span style="font-size:14px;color:#4b5563;line-height:1.35">building for the web professionally</span></div>
-      </div>
-      <div data-reveal="" style="display:flex;flex-direction:column;gap:8px;max-width:560px;font-size:15px">
-        <div style="display:flex;justify-content:space-between;gap:16px"><span><b style="font-weight:600">Growth Dynamics</b> · Full Stack Developer</span><span class="nowrap" style="font:500 12px 'JetBrains Mono',monospace;color:#6b7280">2022 – NOW</span></div>
-        <div style="display:flex;justify-content:space-between;gap:16px"><span><b style="font-weight:600">Skeie's Jewelers</b> · Webmaster / Web Developer</span><span class="nowrap" style="font:500 12px 'JetBrains Mono',monospace;color:#6b7280">2021 – 2022</span></div>
-      </div>
+      <ul role="list" data-reveal="" data-about-stats="" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;border-top:1.5px solid #1f2937;padding-top:20px;max-width:560px">
+        <li style="display:flex;flex-direction:column;gap:6px"><span aria-hidden="true" style="font:800 clamp(32px,3.6vw,48px)/1 'Inter';letter-spacing:-.03em"><span data-count="10">0</span>+</span><span class="sr-only">10+</span><span style="font-size:14px;color:#4b5563;line-height:1.35">Vue.js frontends maintained</span></li>
+        <li style="display:flex;flex-direction:column;gap:6px"><span aria-hidden="true" style="font:800 clamp(32px,3.6vw,48px)/1 'Inter';letter-spacing:-.03em"><span data-count="1">0</span>M+</span><span class="sr-only">1M+</span><span style="font-size:14px;color:#4b5563;line-height:1.35">API requests to Laravel backends I built</span></li>
+        <li style="display:flex;flex-direction:column;gap:6px"><span aria-hidden="true" style="font:800 clamp(32px,3.6vw,48px)/1 'Inter';letter-spacing:-.03em"><span data-count="5">0</span> yrs</span><span class="sr-only">5 years</span><span style="font-size:14px;color:#4b5563;line-height:1.35">building for the web professionally</span></li>
+      </ul>
+      <ul role="list" data-reveal="" data-about-jobs="" style="display:flex;flex-direction:column;gap:8px;max-width:560px;font-size:15px">
+        <li style="display:flex;justify-content:space-between;gap:16px"><span><b style="font-weight:600">Growth Dynamics</b> · Full Stack Developer</span><span class="nowrap" style="font:500 12px 'JetBrains Mono',monospace;color:#6b7280"><span aria-hidden="true">2022 – NOW</span><span class="sr-only">2022 to present</span></span></li>
+        <li style="display:flex;justify-content:space-between;gap:16px"><span><b style="font-weight:600">Skeie's Jewelers</b> · Webmaster / Web Developer</span><span class="nowrap" style="font:500 12px 'JetBrains Mono',monospace;color:#6b7280"><span aria-hidden="true">2021 – 2022</span><span class="sr-only">2021 to 2022</span></span></li>
+      </ul>
     </div>
   </div>
 </section>
 
-<section data-sec="3" id="toolbelt" style="min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:44px;padding:72px 0;box-sizing:border-box">
+<section data-sec="3" id="toolbelt" aria-labelledby="toolbelt-title" style="min-height:100vh;scroll-snap-align:start;display:flex;flex-direction:column;justify-content:center;gap:44px;padding:72px 0;box-sizing:border-box">
   <div style="display:flex;flex-direction:column;gap:14px">
-    <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7280">03 · TOOLBELT</span>
-    <h2 style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 clamp(56px,8vw,120px)/.95 'Bebas Neue',sans-serif;letter-spacing:.01em">
-      <span data-marker="" style="position:absolute;left:-.08em;right:-.08em;bottom:.06em;height:.42em;background:#5eead4;border-radius:3px;transform:scaleX(0)"></span>
-      <span style="position:relative">My (💪) Toolbelt</span>
+    <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#646c7a">03 · TOOLBELT</span>
+    <h2 id="toolbelt-title" style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 clamp(56px,8vw,120px)/.95 'Bebas Neue',sans-serif;letter-spacing:.01em">
+      <span data-marker="" aria-hidden="true" style="position:absolute;left:-.08em;right:-.08em;bottom:.06em;height:.42em;background:#5eead4;border-radius:3px;transform:scaleX(0)"></span>
+      <span style="position:relative">My <span aria-hidden="true">(💪) </span>Toolbelt</span>
     </h2>
   </div>
   <div data-toolbelt="" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:clamp(28px,4vw,56px)">
@@ -143,51 +146,52 @@
   </div>
 </section>
 
-<section data-sec="4" id="contact" style="min-height:100vh;background:#eff6ff;margin:0 calc(-1 * clamp(20px,5vw,72px)) 0 calc(-1 * clamp(56px,14vw,200px));padding:96px clamp(20px,5vw,72px) 32px clamp(56px,14vw,200px);scroll-snap-align:start;position:relative;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box">
-  <canvas data-grid="" style="position:absolute;top:0;bottom:0;left:0;right:0;width:100%;height:100%;pointer-events:none"></canvas>
+<section data-sec="4" id="contact" aria-labelledby="contact-title" style="min-height:100vh;background:#eff6ff;margin:0 calc(-1 * clamp(20px,5vw,72px)) 0 calc(-1 * clamp(56px,14vw,200px));padding:96px clamp(20px,5vw,72px) 32px clamp(56px,14vw,200px);scroll-snap-align:start;position:relative;display:flex;flex-direction:column;justify-content:space-between;box-sizing:border-box">
+  <canvas data-grid="" aria-hidden="true" style="position:absolute;top:0;bottom:0;left:0;right:0;width:100%;height:100%;pointer-events:none"></canvas>
   <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:32px">
-    <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7280">04 · CONTACT</span>
-    <h2 style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 min(160px, calc((100vw - clamp(56px,14vw,200px) - clamp(20px,5vw,72px)) / 8.4))/.92 'Bebas Neue',sans-serif;letter-spacing:.01em;white-space:nowrap">
-      <span data-marker="" style="position:absolute;left:-.06em;right:-.06em;bottom:.06em;height:.4em;background:#5eead4;border-radius:4px;transform:scaleX(0)"></span>
-      <span style="position:relative">Thanks for visiting! 😃</span>
+    <span data-reveal="" style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#646c7a">04 · CONTACT</span>
+    <h2 id="contact-title" style="position:relative;display:inline-block;align-self:flex-start;margin:0;font:400 min(160px, calc((100vw - clamp(56px,14vw,200px) - clamp(20px,5vw,72px)) / 8.4))/.92 'Bebas Neue',sans-serif;letter-spacing:.01em;white-space:nowrap">
+      <span data-marker="" aria-hidden="true" style="position:absolute;left:-.06em;right:-.06em;bottom:.06em;height:.4em;background:#5eead4;border-radius:4px;transform:scaleX(0)"></span>
+      <span style="position:relative">Thanks for visiting! <span aria-hidden="true">😃</span></span>
     </h2>
     <p data-reveal="" style="margin:0;font-size:19px;line-height:1.5;color:#374151;max-width:520px">Have a project in mind or want to talk shop? My inbox is open.</p>
     <div data-reveal="" style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 28px">
       <a href="mailto:rmgriffus@comcast.net" class="hv-mail" style="font:700 clamp(22px,2.6vw,34px) 'Inter';letter-spacing:-.02em;border-bottom:2px solid #1f2937;padding-bottom:2px">rmgriffus@comcast.net</a>
-      <a data-resume="" href="/assets/Ross-Griffus-Resume.pdf" download="Ross-Griffus-Resume.pdf" class="hv-primary" style="background:#3b82f6;color:#ffffff;padding:13px 22px;border-radius:8px;font-size:15px;font-weight:600">Download Resume ↓</a>
+      <a data-resume="" href="/assets/Ross-Griffus-Resume.pdf" download="Ross-Griffus-Resume.pdf" class="hv-primary" style="background:#2563eb;color:#ffffff;padding:13px 22px;border-radius:8px;font-size:15px;font-weight:600">Download Resume<span class="sr-only"> (PDF)</span> <span aria-hidden="true">↓</span></a>
     </div>
   </div>
   <footer style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1.5px solid #1f2937;padding-top:18px;font-size:14px;color:#4b5563">
     <span><b style="color:#1f2937;font-weight:700">Ross Griffus</b> · Software Engineer &amp; Web Developer</span>
     <span style="display:flex;align-items:center;gap:18px">
-      <a href="https://github.com/Rmgriff83" target="_blank" rel="noopener" aria-label="GitHub" class="hv-ink" style="display:block;color:#6b7280"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:block" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3"></path></svg></a>
-      <a href="https://www.linkedin.com/in/ross-griffus-65905a7b/" target="_blank" rel="noopener" aria-label="LinkedIn" class="hv-li" style="display:block;color:#6b7280"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:block" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg></a>
+      <a href="https://github.com/Rmgriff83" target="_blank" rel="noopener" aria-label="Ross Griffus on GitHub (opens in a new tab)" class="hv-ink" style="display:block;color:#6b7280"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:block" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3"></path></svg></a>
+      <a href="https://www.linkedin.com/in/ross-griffus-65905a7b/" target="_blank" rel="noopener" aria-label="Ross Griffus on LinkedIn (opens in a new tab)" class="hv-li" style="display:block;color:#6b7280"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="display:block" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"></path></svg></a>
       <span>© 2026 Ross Griffus. All rights reserved.</span>
     </span>
   </footer>
 </section>
 
+</div>
 </main>
 
-<div data-modal-backdrop="" style="position:fixed;inset:0;z-index:59;background:rgba(17,24,39,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden"></div>
-<div data-modal="" role="dialog" aria-modal="true" aria-label="" style="position:fixed;left:0;top:0;width:0;height:0;z-index:60;border-radius:12px;overflow:hidden;background:#ffffff;box-shadow:0 30px 80px rgba(17,24,39,.35);display:flex;flex-direction:column;visibility:hidden">
+<div data-modal-backdrop="" aria-hidden="true" style="position:fixed;inset:0;z-index:59;background:rgba(17,24,39,.55);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;visibility:hidden"></div>
+<div data-modal="" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-desc" style="position:fixed;left:0;top:0;width:0;height:0;z-index:60;border-radius:12px;overflow:hidden;background:#ffffff;box-shadow:0 30px 80px rgba(17,24,39,.35);display:flex;flex-direction:column;visibility:hidden">
   <div data-modal-media="" style="position:relative;flex:none;height:100%;background:#1f2937">
     <img data-modal-img="" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">
     <div style="position:absolute;left:0;right:0;bottom:0;height:70%;background:linear-gradient(to top,rgba(17,24,39,.92) 0%,rgba(17,24,39,.6) 40%,rgba(17,24,39,0) 100%);pointer-events:none"></div>
     <div style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:10px;padding:clamp(20px,2.6vw,36px)">
-      <div style="display:flex;align-items:baseline;gap:14px"><span data-modal-num="" style="font:500 12px 'JetBrains Mono',monospace;color:#d1d5db"></span><span data-modal-name="" style="font:700 clamp(24px,3vw,44px)/1.1 'Inter';letter-spacing:-.02em;color:#ffffff"></span></div>
-      <p data-modal-desc="" style="margin:0;font-size:17px;line-height:1.5;color:#e5e7eb"></p>
+      <div style="display:flex;align-items:baseline;gap:14px"><span data-modal-num="" aria-hidden="true" style="font:500 12px 'JetBrains Mono',monospace;color:#d1d5db"></span><h2 id="modal-title" data-modal-name="" style="margin:0;font:700 clamp(24px,3vw,44px)/1.1 'Inter';letter-spacing:-.02em;color:#ffffff"></h2></div>
+      <p id="modal-desc" data-modal-desc="" style="margin:0;font-size:17px;line-height:1.5;color:#e5e7eb"></p>
     </div>
-    <button data-modal-close="" aria-label="Close" class="hv-close" style="position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#1f2937;font:500 22px/1 'Inter';cursor:pointer;display:grid;place-items:center;opacity:0">×</button>
+    <button data-modal-close="" aria-label="Close project details" class="hv-close" style="position:absolute;top:16px;right:16px;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.92);color:#1f2937;font:500 22px/1 'Inter';cursor:pointer;display:grid;place-items:center;opacity:0"><span aria-hidden="true">×</span></button>
   </div>
   <div data-modal-body="" style="flex:1;min-height:0;overflow:auto;opacity:0">
     <div style="display:flex;flex-wrap:wrap;align-items:flex-start;gap:clamp(28px,4vw,56px);padding:clamp(24px,3.4vw,48px)">
       <div style="flex:2 1 420px;min-width:0;display:flex;flex-direction:column;gap:22px">
-        <div data-tablist="" role="tablist" style="position:relative;display:flex;flex-wrap:wrap;gap:4px 26px;border-bottom:1.5px solid #e5e7eb">
+        <div data-tablist="" role="tablist" aria-label="Project details" style="position:relative;display:flex;flex-wrap:wrap;gap:4px 26px;border-bottom:1.5px solid #e5e7eb">
           <!-- tabs rendered per project -->
-          <span data-tab-ink="" style="position:absolute;left:0;bottom:-1.5px;height:2px;width:0;background:#3b82f6"></span>
+          <span data-tab-ink="" aria-hidden="true" style="position:absolute;left:0;bottom:-1.5px;height:2px;width:0;background:#2563eb"></span>
         </div>
-        <div data-tab-panel="" role="tabpanel" style="display:flex;flex-direction:column;gap:16px"></div>
+        <div id="tab-panel" data-tab-panel="" role="tabpanel" tabindex="0" style="display:flex;flex-direction:column;gap:16px"></div>
       </div>
       <div style="flex:1 1 240px;min-width:0;display:flex;flex-direction:column;gap:24px">
         <div style="display:flex;flex-direction:column;gap:10px;border-top:1.5px solid #e5e7eb;padding-top:14px">
@@ -196,7 +200,7 @@
         </div>
         <div style="display:flex;flex-direction:column;gap:12px;border-top:1.5px solid #e5e7eb;padding-top:14px">
           <span style="font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;color:#6b7280">SKILLS &amp; TOOLS</span>
-          <div data-modal-tags="" style="display:flex;flex-wrap:wrap;gap:8px"></div>
+          <ul role="list" aria-label="Skills and tools" data-modal-tags="" style="display:flex;flex-wrap:wrap;gap:8px"></ul>
         </div>
       </div>
     </div>

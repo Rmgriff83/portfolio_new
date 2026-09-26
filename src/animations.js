@@ -5,7 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { SplitText } from 'gsap/SplitText';
 import config from './config.js';
-import { renderModal, renderTab, applyLayout, bp } from './render.js';
+import { renderModal, renderTab, applyLayout, layoutKey } from './render.js';
 
 export default class Portfolio {
   constructor(projects, toolbelt) {
@@ -27,6 +27,22 @@ export default class Portfolio {
       // A card title with a real link navigates instead of opening the modal
       if (card && !t.closest('[data-card-link]')) this.openProject(+card.dataset.index, card, e);
     });
+
+    document.addEventListener('keydown', e => {
+      const t = e.target;
+      if (!t.closest) return;
+      // Card titles that open the dialog are role="button" links: Space should activate them like a button
+      if (e.key === ' ' && t.matches('[data-card-title][role="button"]')) { e.preventDefault(); t.click(); return; }
+      // Tabs: arrow keys / Home / End move between tabs (ARIA tabs pattern, automatic activation)
+      if (t.matches('[data-tab]')) {
+        const tabs = [...document.querySelectorAll('[data-tab]')], k = tabs.indexOf(t), n = tabs.length;
+        const next = { ArrowRight: (k + 1) % n, ArrowLeft: (k - 1 + n) % n, Home: 0, End: n - 1 }[e.key];
+        if (next === undefined) return;
+        e.preventDefault();
+        this.selectTab(next);
+        tabs[next].focus();
+      }
+    });
   }
 
   openProject(i, card, e) {
@@ -42,10 +58,14 @@ export default class Portfolio {
     const r = card.getBoundingClientRect();
     const w = Math.min(innerWidth * 0.92, 1120), h = innerHeight * 0.9;
     this._card = card; this._modalOpen = true;
+    // Everything behind the dialog goes inert (unfocusable, hidden from screen readers); focus returns here on close
+    this._returnFocus = card.querySelector('[data-card-title]') || document.activeElement;
+    this._inert = [...document.querySelectorAll('body > :not([data-modal]):not([data-modal-backdrop]):not(script)')];
+    this._inert.forEach(el => { el.inert = true; });
     this._lock = ev => { if (!(ev.target.closest && ev.target.closest('[data-modal-body]'))) ev.preventDefault(); };
     window.addEventListener('wheel', this._lock, { passive: false });
     window.addEventListener('touchmove', this._lock, { passive: false });
-    this._esc = ev => { if (ev.key === 'Escape') this.closeProject(); else if ([' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(ev.key) && !(ev.target.closest && ev.target.closest('[data-modal-body]'))) ev.preventDefault(); };
+    this._esc = ev => { if (ev.key === 'Escape') this.closeProject(); else if ([' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(ev.key) && !(ev.target.closest && ev.target.closest('[data-modal-body], button, a'))) ev.preventDefault(); };
     window.addEventListener('keydown', this._esc);
     body.scrollTop = 0;
     gsap.set(m, { visibility: 'visible', left: r.left, top: r.top, width: r.width, height: r.height });
@@ -55,7 +75,7 @@ export default class Portfolio {
       .to(bd, { autoAlpha: 1, duration: 0.4 }, 0)
       .to(m, { left: (innerWidth - w) / 2, top: (innerHeight - h) / 2, width: w, height: h, duration: 0.75, ease: 'power3.inOut' }, 0)
       .to(media, { height: Math.round(h * 0.42), duration: 0.75, ease: 'power3.inOut' }, 0)
-      .add(() => { this._inkSel = null; this.updateInk(); }, 0.55)
+      .add(() => { this._inkSel = null; this.updateInk(); close.focus({ preventScroll: true }); }, 0.55)
       .to([body, close], { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0.55);
   }
 
@@ -89,6 +109,8 @@ export default class Portfolio {
     gsap.timeline({ onComplete: () => {
         gsap.set(card, { visibility: 'visible' }); gsap.set(m, { visibility: 'hidden' });
         this._modalOpen = false; this._modalBusy = false;
+        (this._inert || []).forEach(el => { el.inert = false; });
+        if (this._returnFocus) this._returnFocus.focus({ preventScroll: true });
       } })
       .to([body, close], { opacity: 0, duration: 0.2 }, 0)
       .to(m, { left: r.left, top: r.top, width: r.width, height: r.height, duration: 0.65, ease: 'power3.inOut' }, 0.1)
@@ -101,14 +123,17 @@ export default class Portfolio {
     const p = this.pos && this.pos[i];
     const sec = document.querySelector('[data-sec="' + i + '"]');
     const top = p ? p.start : sec ? sec.offsetTop : 0;
-    window.scrollTo({ top, behavior: 'smooth' });
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    window.scrollTo({ top, behavior: reduce ? 'auto' : 'smooth' });
+    // Keyboard and screen reader users land in the section they picked
+    if (sec) { if (!sec.hasAttribute('tabindex')) sec.setAttribute('tabindex', '-1'); sec.focus({ preventScroll: true }); }
   }
 
   mount() {
     this.bind();
     // Re-lay out the hero/About when crossing a breakpoint, then let ScrollTrigger re-measure
-    this._bp = bp();
-    this._onResize = () => { const b = bp(); if (b !== this._bp) { this._bp = applyLayout(b); ScrollTrigger.refresh(); } };
+    this._bp = layoutKey();
+    this._onResize = () => { if (layoutKey() !== this._bp) { this._bp = applyLayout(); ScrollTrigger.refresh(); } };
     window.addEventListener('resize', this._onResize);
     (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => this.init());
   }
@@ -149,7 +174,8 @@ export default class Portfolio {
         if (a < 0 || a === this._activeSec) return;
         this._activeSec = a;
         gsap.to(dotP, { p: railPos[a], duration: 0.6, ease: 'power3.inOut', overwrite: true, onUpdate: () => dotTween.progress(dotP.p) });
-        $$('[data-stop-dot]').forEach((el, k) => gsap.to(el, { backgroundColor: k === a ? '#3b82f6' : k < a ? '#9ca3af' : '#f9fafb', borderColor: k === a ? '#3b82f6' : '#9ca3af', scale: k === a ? 1.3 : 1, duration: 0.35, delay: k === a ? 0.45 : 0, overwrite: true }));
+        $$('[data-stop]').forEach((el, k) => (k === a ? el.setAttribute('aria-current', 'true') : el.removeAttribute('aria-current')));
+        $$('[data-stop-dot]').forEach((el, k) => gsap.to(el, { backgroundColor: k === a ? '#2563eb' : k < a ? '#9ca3af' : '#f9fafb', borderColor: k === a ? '#2563eb' : '#9ca3af', scale: k === a ? 1.3 : 1, duration: 0.35, delay: k === a ? 0.45 : 0, overwrite: true }));
       };
       const railP = y => {
         const S = this.railS; if (!S) return 0;
@@ -217,6 +243,14 @@ export default class Portfolio {
         scrollTrigger: { containerAnimation: htween, trigger: c, start: 'left 92%', toggleActions: 'play none none reverse' }
       }));
       this.cards = cards;
+      // Keyboard focus on a card: bring it on screen by scrolling to its snap point (the browser would
+      // otherwise scroll the overflow-hidden clip sideways and desync the track)
+      track.addEventListener('focusin', e => {
+        const c = e.target.closest('[data-card]'); if (!c) return;
+        clip.scrollLeft = 0; requestAnimationFrame(() => { clip.scrollLeft = 0; });
+        const y = this.hST.start + Math.min(dist(), cardX(c));
+        if (Math.abs(window.scrollY - y) > 2) window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+      });
 
       gsap.set('[data-marker]', { scaleX: 0, rotation: -1, transformOrigin: 'left center' });
 
@@ -266,14 +300,20 @@ export default class Portfolio {
 
       // Top bar slides in once the hero is left behind
       const topbar = $('[data-topbar]');
+      let barShown = false;
+      const showBar = () => gsap.to(topbar, { yPercent: 0, y: 0, duration: 0.45, ease: 'power3.out', overwrite: true });
+      const hideBar = () => gsap.to(topbar, { yPercent: -100, duration: 0.35, ease: 'power3.in', overwrite: true });
       ScrollTrigger.create({ trigger: '[data-sec="0"]', start: 'bottom 60%',
-        onEnter: () => gsap.to(topbar, { yPercent: 0, y: 0, duration: 0.45, ease: 'power3.out', overwrite: true }),
-        onLeaveBack: () => gsap.to(topbar, { yPercent: -100, duration: 0.35, ease: 'power3.in', overwrite: true }) });
+        onEnter: () => { barShown = true; showBar(); },
+        onLeaveBack: () => { barShown = false; if (!topbar.contains(document.activeElement)) hideBar(); } });
       gsap.set(topbar, { yPercent: -100, y: 0 });
+      // Keyboard users can tab into the bar while it's tucked away: slide it in while it has focus
+      topbar.addEventListener('focusin', showBar);
+      topbar.addEventListener('focusout', e => { if (!barShown && !topbar.contains(e.relatedTarget)) hideBar(); });
 
       // Resume pulse when the dot lands on contact
       ScrollTrigger.create({ trigger: '[data-sec="4"]', start: 'top 40%', onEnter: () =>
-        gsap.fromTo('[data-resume]', { boxShadow: '0 0 0 0 rgba(59,130,246,.55)' }, { boxShadow: '0 0 0 16px rgba(59,130,246,0)', duration: 1, ease: 'power2.out' }) });
+        gsap.fromTo('[data-resume]', { boxShadow: '0 0 0 0 rgba(37,99,235,.55)' }, { boxShadow: '0 0 0 16px rgba(37,99,235,0)', duration: 1, ease: 'power2.out' }) });
 
       // Rail stops sit where each section actually starts in the scroll
       const layout = () => {
@@ -339,7 +379,7 @@ export default class Portfolio {
         cx.setTransform(dpr, 0, 0, dpr, 0, 0);
         cx.clearRect(0, 0, r.width, r.height);
         const gap = 30;
-        cx.fillStyle = 'rgba(59,130,246,.28)';
+        cx.fillStyle = 'rgba(37,99,235,.28)';
         for (let y = gap / 2; y < r.height; y += gap) for (let x = gap / 2; x < r.width; x += gap) {
           let px = x + Math.sin(t + y * 0.02) * 3, py = y + Math.cos(t + x * 0.015) * 3;
           cx.beginPath(); cx.arc(px, py, 1.3, 0, 6.283); cx.fill();

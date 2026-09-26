@@ -8,8 +8,8 @@ a:hover{color:#2563eb}
 .hv-ink:hover{color:#1f2937 !important}
 .hv-li:hover{color:#0a66c2 !important}
 .hv-li-hero:hover{transform:scale(1.08) !important;color:#0a66c2 !important}
-.hv-outline:hover{background:#eff6ff !important;color:#2563eb !important}
-.hv-primary:hover{background:#2563eb !important;color:#ffffff !important}
+.hv-outline:hover{background:#eff6ff !important;color:#1d4ed8 !important}
+.hv-primary:hover{background:#1d4ed8 !important;color:#ffffff !important}
 .hv-mail:hover{color:#2563eb !important;border-color:#2563eb !important}
 .hv-card-title:hover{color:#5eead4 !important}
 .hv-close:hover{background:#ffffff !important}
@@ -38,11 +38,41 @@ a:hover{color:#2563eb}
   [data-card] .slot-empty{justify-content:flex-start;padding-top:22%}
 }
 
-/* Phone breakpoint (matches bp() 'phone'): the heading is wider than the space beside the photo,
-   so the design's -96px overlap would cover the photo and its EUGENE, OR badge. Overlap only the eyebrow. */
+/* About, phone (<500px, matches aboutBp() 'phone'): heading full width, then a full-width headshot with the
+   intro paragraph laid over its bottom on the project cards' gradient, then stats and jobs.
+   The text column's children join the About grid so they can be placed around the photo. */
 @media (max-width:499px){
-  [data-about-text]{margin-top:-28px !important}
+  [data-about-grid]{grid-template-areas:"head" "photo" "stats" "jobs";align-items:start !important}
+  [data-about-text]{display:contents !important}
+  [data-about-head]{grid-area:head;margin-bottom:20px}
+  [data-about-photo]{grid-area:photo}
+  [data-about-photo] img{aspect-ratio:3/4 !important}
+  /* The gradient rides on the paragraph itself so every line has contrast however long the copy gets */
+  [data-about-p]{grid-area:photo;align-self:end;position:relative;z-index:1;padding:96px 20px 20px;border-radius:0 0 4px 4px;color:#e5e7eb !important;background:linear-gradient(to bottom,rgba(17,24,39,0) 0,rgba(17,24,39,.08) 24px,rgba(17,24,39,.3) 56px,rgba(17,24,39,.68) 96px,rgba(17,24,39,.92) 100%)}
+  [data-about-stats]{grid-area:stats;margin-top:24px}
+  [data-about-jobs]{grid-area:jobs;margin-top:16px}
 }
 
 /* Keep contact content above its dot-grid canvas (the hero does this with inline position:relative) */
 #contact > :not(canvas){position:relative}
+
+/* ---- Accessibility ---- */
+
+/* Visually hidden, still read by screen readers */
+.sr-only{position:absolute !important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Skip link: off screen until focused */
+.skip-link{position:fixed;left:12px;top:-100px;z-index:100;background:#1f2937;color:#ffffff;padding:10px 16px;border-radius:8px;font-size:15px;font-weight:600}
+.skip-link:focus{top:12px;color:#ffffff}
+
+/* Lists used for chips, stats and jobs keep their original look */
+ul[role="list"]{margin:0;padding:0;list-style:none}
+/* Headings added for structure that take their look from the element inside */
+.h-reset{margin:0;font:inherit}
+
+/* Visible keyboard focus: brand blue on light backgrounds, teal on dark ones */
+:focus-visible{outline:2px solid #2563eb;outline-offset:3px}
+[data-card] a:focus-visible,[data-modal-close]:focus-visible{outline-color:#5eead4}
+[data-stop]:focus-visible{outline-offset:1px;border-radius:50%}
+/* Programmatic focus targets (skip link, section jumps, tab panel) don't need a ring */
+main:focus,[data-sec]:focus,[data-tab-panel]:focus:not(:focus-visible){outline:none}
