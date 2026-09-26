@@ -5,7 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { SplitText } from 'gsap/SplitText';
 import config from './config.js';
-import { renderModal, renderTab } from './render.js';
+import { renderModal, renderTab, applyLayout, bp } from './render.js';
 
 export default class Portfolio {
   constructor(projects, toolbelt) {
@@ -106,11 +106,16 @@ export default class Portfolio {
 
   mount() {
     this.bind();
+    // Re-lay out the hero/About when crossing a breakpoint, then let ScrollTrigger re-measure
+    this._bp = bp();
+    this._onResize = () => { const b = bp(); if (b !== this._bp) { this._bp = applyLayout(b); ScrollTrigger.refresh(); } };
+    window.addEventListener('resize', this._onResize);
     (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => this.init());
   }
 
   init() {
     gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, SplitText);
+    ScrollTrigger.config({ ignoreMobileResize: true });
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const $ = (s, r = document) => r.querySelector(s);
     const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
@@ -221,10 +226,10 @@ export default class Portfolio {
         const fade = 'linear-gradient(to right,transparent 0,rgba(0,0,0,.08) 24px,rgba(0,0,0,.3) 56px,rgba(0,0,0,.65) 88px,#000 120px)';
         Object.assign(clip.style, { overflow: 'hidden', webkitMaskImage: fade, maskImage: fade });
         const cr = clip.getBoundingClientRect();
-        const left = $$('[data-hero-left]'), right = $('[data-hero-right]');
+        const left = $$('[data-hero-left]'), right = $$('[data-hero-right]');
         gsap.timeline({ delay: 0.15, onComplete: () => Object.assign(clip.style, { overflow: '', webkitMaskImage: '', maskImage: '' }) })
           .from(left, { x: i => -(left[i].getBoundingClientRect().right - cr.left), duration: 1.2, ease: 'power4.out', stagger: 0.12 })
-          .from(right, { x: () => cr.right - right.getBoundingClientRect().left, duration: 0.9, ease: 'power4.out' }, '-=0.55');
+          .from(right, { x: k => cr.right - right[k].getBoundingClientRect().left, duration: 0.9, ease: 'power4.out', stagger: 0.1 }, '-=0.55');
       }
 
       this.pos = [];
@@ -278,8 +283,12 @@ export default class Portfolio {
         this.railS = [[0, 0], [this.hST.start, 0.25], [this.hST.end, 0.25], [P[2].start, 0.5], [P[3].start, 0.75], [Math.min(P[4].start, max), 1]];
         this._railSync();
         const pts = this.pos.map(p => p.start);
-        const tb = $('[data-sec="3"]');
-        if (tb.offsetHeight > innerHeight + 40) pts.push(this.pos[3].start + tb.offsetHeight - innerHeight);
+        // Sections taller than the screen (common on phones) get an end snap point and scroll freely in between
+        this.tall = [];
+        [0, 2, 3, 4].forEach(k => {
+          const el = $('[data-sec="' + k + '"]'), s = this.pos[k].start, e = Math.min(max, s + el.offsetHeight - innerHeight);
+          if (el.offsetHeight > innerHeight + 40) { pts.push(e); this.tall.push([s, e]); }
+        });
         const d = dist();
         if (d > 0) cards.forEach(c => pts.push(this.hST.start + Math.min(d, cardX(c))));
         // One branch stop per card, at the point where that card snaps; cards that clamp to the end share it
@@ -308,6 +317,8 @@ export default class Portfolio {
         snap: {
           snapTo: v => {
             if (!(this.props.snap ?? true) || !this.snapPts) return v;
+            const y = v * ScrollTrigger.maxScroll(window), m = innerHeight * 0.2;
+            if ((this.tall || []).some(([s, e]) => y > s + m && y < e - m)) return v;
             return this.snapPts.reduce((a, b) => (Math.abs(b - v) < Math.abs(a - v) ? b : a));
           },
           duration: { min: 0.3, max: 0.8 }, delay: 0.1, ease: 'power2.inOut'
@@ -315,23 +326,25 @@ export default class Portfolio {
       });
     });
 
-    // Ambient dot grid in hero, bends away from cursor
-    const cv = $('[data-grid]'), cx = cv.getContext('2d');
+    // Ambient dot grid behind the hero and contact sections (every [data-grid] canvas)
+    const grids = $$('[data-grid]').map(cv => ({ cv, cx: cv.getContext('2d') }));
     let t = 0;
     this._tick = () => {
-      const r = cv.getBoundingClientRect();
-      if (r.bottom < 0 || !(this.props.ambientGrid ?? true)) { cx.clearRect(0, 0, cv.width, cv.height); return; }
-      const dpr = Math.min(devicePixelRatio || 1, 2);
-      if (cv.width !== Math.round(r.width * dpr)) { cv.width = r.width * dpr; cv.height = r.height * dpr; }
-      cx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      cx.clearRect(0, 0, r.width, r.height);
       t += reduce ? 0 : 0.012;
-      const gap = 30;
-      cx.fillStyle = 'rgba(59,130,246,.28)';
-      for (let y = gap / 2; y < r.height; y += gap) for (let x = gap / 2; x < r.width; x += gap) {
-        let px = x + Math.sin(t + y * 0.02) * 3, py = y + Math.cos(t + x * 0.015) * 3;
-        cx.beginPath(); cx.arc(px, py, 1.3, 0, 6.283); cx.fill();
-      }
+      grids.forEach(({ cv, cx }) => {
+        const r = cv.getBoundingClientRect();
+        if (r.bottom < 0 || r.top > innerHeight || !(this.props.ambientGrid ?? true)) { cx.clearRect(0, 0, cv.width, cv.height); return; }
+        const dpr = Math.min(devicePixelRatio || 1, 2);
+        if (cv.width !== Math.round(r.width * dpr) || cv.height !== Math.round(r.height * dpr)) { cv.width = r.width * dpr; cv.height = r.height * dpr; }
+        cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        cx.clearRect(0, 0, r.width, r.height);
+        const gap = 30;
+        cx.fillStyle = 'rgba(59,130,246,.28)';
+        for (let y = gap / 2; y < r.height; y += gap) for (let x = gap / 2; x < r.width; x += gap) {
+          let px = x + Math.sin(t + y * 0.02) * 3, py = y + Math.cos(t + x * 0.015) * 3;
+          cx.beginPath(); cx.arc(px, py, 1.3, 0, 6.283); cx.fill();
+        }
+      });
     };
     gsap.ticker.add(this._tick);
     ScrollTrigger.refresh();

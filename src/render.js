@@ -49,6 +49,8 @@ export function renderPage(projects, toolbelt) {
 
   $('[data-ptotal]').textContent = pad2(projects.length);
 
+  applyLayout();
+
   // Project cards
   $('[data-track]').innerHTML = projects.map((p, i) => {
     const media = p.image
@@ -105,4 +107,31 @@ export function renderTab(p, tab) {
   });
   document.querySelector('[data-tab-panel]').innerHTML = p.tabs[t].paras.map(para =>
     `<p style="margin:0;font-size:17px;line-height:1.65;color:#374151;text-wrap:pretty">${esc(para)}</p>`).join('');
+}
+
+// Breakpoint layouts for the hero grid and About section (the design's `hero` / `about` render values)
+export const bp = () => { const w = window.innerWidth; return w < 500 ? 'phone' : w <= 768 ? 'tab' : 'desk'; };
+
+const HERO = {
+  desk: { cols: 'minmax(0,1fr) clamp(240px,28vw,420px)', areas: '"name photo" "desc photo" "desc btns"', rowGap: '14px', photoMin: '140px' },
+  tab: { cols: 'minmax(0,1.2fr) minmax(0,1fr)', areas: '"name photo" "desc desc" "btns btns"', rowGap: '24px', photoMin: '200px' },
+  phone: { cols: 'minmax(0,1fr)', areas: '"name" "desc" "photo" "btns"', rowGap: '20px', photoMin: '220px' }
+};
+
+const about = b => Object.assign(b !== 'desk' ? { badgeL: 'auto', badgeR: '14px' } : { badgeL: '14px', badgeR: 'auto' }, b === 'desk'
+  ? { pad: '64px 0', gap: 'clamp(32px,6vw,96px)', photoW: 'min(420px,70vw)', photoML: '0', textMT: '0', textGap: '26px', pSize: '19px' }
+  : { pad: '28px 0', gap: '0', photoW: '52%', photoML: 'auto', textMT: '-96px', textGap: '16px', pSize: '16px' });
+
+export function applyLayout(b = bp()) {
+  const $ = s => document.querySelector(s);
+  const h = HERO[b], a = about(b);
+  Object.assign($('[data-hero-clip]').style, { gridTemplateColumns: h.cols, gridTemplateAreas: h.areas, rowGap: h.rowGap });
+  $('[data-hero-photo]').style.minHeight = h.photoMin;
+  $('#about').style.padding = a.pad;
+  $('[data-about-grid]').style.gap = a.gap;
+  Object.assign($('[data-about-photo]').style, { maxWidth: a.photoW, marginLeft: a.photoML });
+  Object.assign($('[data-about-badge]').style, { left: a.badgeL, right: a.badgeR });
+  Object.assign($('[data-about-text]').style, { gap: a.textGap, marginTop: a.textMT });
+  $('[data-about-p]').style.fontSize = a.pSize;
+  return b;
 }

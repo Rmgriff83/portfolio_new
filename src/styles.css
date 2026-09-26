@@ -20,3 +20,29 @@ a:hover{color:#2563eb}
 .slot-empty svg{opacity:.45}
 .slot-empty .cap{max-width:90%;font-weight:500;letter-spacing:.01em;opacity:.75}
 .slot-empty .ring{position:absolute;inset:0;pointer-events:none;border:1.5px dashed currentColor;opacity:.35}
+
+.nowrap{white-space:nowrap}
+
+/* The wave emoji sizes itself to the paragraph's height; cap it so a tall, wrapped paragraph can't blow it up */
+[data-wave]{font-size:min(78cqh,.9em) !important}
+
+/* Phone fixes. Kept here (not in the markup) so the page stays identical to the design at desktop sizes. */
+@media (max-width:640px){
+  /* Hero: breathing room between the logo row and the name once content outgrows the screen */
+  #intro{gap:28px}
+  [data-hero-left] > [aria-hidden]{align-items:flex-start !important}
+  /* Projects: size cards to fit between the design's 45px edge fade and the right gutter */
+  [data-card]{width:calc(100vw - clamp(14px,3vw,44px) - 47px - 45px - clamp(20px,5vw,72px)) !important}
+  /* Narrow cards: keep long titles to fewer lines and the empty-image placeholder clear of the text */
+  [data-card] .hv-card-title{font-size:20px !important}
+  [data-card] .slot-empty{justify-content:flex-start;padding-top:22%}
+}
+
+/* Phone breakpoint (matches bp() 'phone'): the heading is wider than the space beside the photo,
+   so the design's -96px overlap would cover the photo and its EUGENE, OR badge. Overlap only the eyebrow. */
+@media (max-width:499px){
+  [data-about-text]{margin-top:-28px !important}
+}
+
+/* Keep contact content above its dot-grid canvas (the hero does this with inline position:relative) */
+#contact > :not(canvas){position:relative}
