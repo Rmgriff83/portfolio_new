@@ -31,8 +31,8 @@ a:hover{color:#2563eb}
   /* Hero: breathing room between the logo row and the name once content outgrows the screen */
   #intro{gap:28px}
   [data-hero-left] > [aria-hidden]{align-items:flex-start !important}
-  /* Projects: size cards to fit between the design's 45px edge fade and the right gutter */
-  [data-card]{width:calc(100vw - clamp(14px,3vw,44px) - 47px - 45px - clamp(20px,5vw,72px)) !important}
+  /* Projects: size cards to fit between the left and right gutters */
+  [data-card]{width:calc(100vw - clamp(20px,5vw,72px) - clamp(20px,5vw,72px)) !important}
   /* Narrow cards: keep long titles to fewer lines and the empty-image placeholder clear of the text */
   [data-card] .hv-card-title{font-size:20px !important}
   [data-card] .slot-empty{justify-content:flex-start;padding-top:22%}
@@ -73,6 +73,19 @@ ul[role="list"]{margin:0;padding:0;list-style:none}
 /* Visible keyboard focus: brand blue on light backgrounds, teal on dark ones */
 :focus-visible{outline:2px solid #2563eb;outline-offset:3px}
 [data-card] a:focus-visible,[data-modal-close]:focus-visible{outline-color:#5eead4}
-[data-stop]:focus-visible{outline-offset:1px;border-radius:50%}
 /* Programmatic focus targets (skip link, section jumps, tab panel) don't need a ring */
 main:focus,[data-sec]:focus,[data-tab-panel]:focus:not(:focus-visible){outline:none}
+
+/* Toolbelt on phones: one column, and smaller chips so more skills fit */
+@media (max-width:640px){
+  [data-toolbelt]{grid-template-columns:minmax(0,1fr) !important}
+  #toolbelt ul{gap:6px !important}
+  #toolbelt [data-chip]{font-size:13px !important;padding:5px 11px !important}
+}
+
+/* About: the text comes first in the page order (heading before photo for screen readers);
+   the photo still shows first. The phone layout places both with grid areas instead. */
+[data-about-photo]{order:-1}
+/* The dialog title takes focus when the popup opens; only show a ring for keyboard focus */
+#modal-title:focus:not(:focus-visible){outline:none}
+#modal-title:focus-visible{outline-color:#5eead4}

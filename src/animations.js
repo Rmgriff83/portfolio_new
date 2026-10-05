@@ -2,7 +2,6 @@
 // only the Claude Design runtime pieces changed: setState → explicit render calls, this.props → config.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { SplitText } from 'gsap/SplitText';
 import config from './config.js';
 import { renderModal, renderTab, applyLayout, layoutKey } from './render.js';
@@ -24,8 +23,7 @@ export default class Portfolio {
       if (tab) return this.selectTab(+tab.dataset.tabIndex);
       if (t.closest('[data-modal-close]') || t.closest('[data-modal-backdrop]')) return this.closeProject();
       const card = t.closest('[data-card]');
-      // A card title with a real link navigates instead of opening the modal
-      if (card && !t.closest('[data-card-link]')) this.openProject(+card.dataset.index, card, e);
+      if (card) this.openProject(+card.dataset.index, card, e);
     });
 
     document.addEventListener('keydown', e => {
@@ -67,16 +65,31 @@ export default class Portfolio {
     window.addEventListener('touchmove', this._lock, { passive: false });
     this._esc = ev => { if (ev.key === 'Escape') this.closeProject(); else if ([' ', 'PageDown', 'PageUp', 'ArrowDown', 'ArrowUp', 'Home', 'End'].includes(ev.key) && !(ev.target.closest && ev.target.closest('[data-modal-body], button, a'))) ev.preventDefault(); };
     window.addEventListener('keydown', this._esc);
+    // Keep Tab / Shift+Tab inside the dialog (the inert background also keeps focus off the page)
+    const title = m.querySelector('#modal-title');
+    this._trap = ev => {
+      if (ev.key !== 'Tab') return;
+      const f = [...m.querySelectorAll('a[href], button, [tabindex]')].filter(el => el.tabIndex >= 0 && el.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1], a = document.activeElement;
+      if (ev.shiftKey && (a === first || a === title || !m.contains(a))) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && (a === last || !m.contains(a))) { ev.preventDefault(); first.focus(); }
+    };
+    window.addEventListener('keydown', this._trap);
     body.scrollTop = 0;
     gsap.set(m, { visibility: 'visible', left: r.left, top: r.top, width: r.width, height: r.height });
     gsap.set(media, { height: r.height }); gsap.set([body, close], { opacity: 0 });
     gsap.set(card, { visibility: 'hidden' });
-    gsap.timeline({ onComplete: () => { this._modalBusy = false; this._inkSel = null; this.updateInk(); } })
+    // Screen readers announce "<project>, dialog" and its heading as soon as it opens
+    title.focus({ preventScroll: true });
+    const tl = gsap.timeline({ onComplete: () => { this._modalBusy = false; this._inkSel = null; this.updateInk(); } })
       .to(bd, { autoAlpha: 1, duration: 0.4 }, 0)
       .to(m, { left: (innerWidth - w) / 2, top: (innerHeight - h) / 2, width: w, height: h, duration: 0.75, ease: 'power3.inOut' }, 0)
       .to(media, { height: Math.round(h * 0.42), duration: 0.75, ease: 'power3.inOut' }, 0)
-      .add(() => { this._inkSel = null; this.updateInk(); close.focus({ preventScroll: true }); }, 0.55)
+      .add(() => { this._inkSel = null; this.updateInk(); }, 0.55)
       .to([body, close], { opacity: 1, duration: 0.4, ease: 'power2.out' }, 0.55);
+    // Reduced motion: no morph, the dialog simply appears
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) tl.progress(1);
   }
 
   selectTab(k) {
@@ -85,7 +98,7 @@ export default class Portfolio {
     renderTab(this.projects[this.state.sel], k);
     this.updateInk();
     const panel = document.querySelector('[data-tab-panel]');
-    if (panel) gsap.fromTo(panel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
+    if (panel && !matchMedia('(prefers-reduced-motion: reduce)').matches) gsap.fromTo(panel, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.35, ease: 'power2.out' });
   }
 
   // Was componentDidUpdate in the design: slides the tab underline to the active tab
@@ -105,8 +118,8 @@ export default class Portfolio {
     const bd = document.querySelector('[data-modal-backdrop]'), card = this._card;
     const r = card.getBoundingClientRect();
     window.removeEventListener('wheel', this._lock); window.removeEventListener('touchmove', this._lock);
-    window.removeEventListener('keydown', this._esc);
-    gsap.timeline({ onComplete: () => {
+    window.removeEventListener('keydown', this._esc); window.removeEventListener('keydown', this._trap);
+    const tl = gsap.timeline({ onComplete: () => {
         gsap.set(card, { visibility: 'visible' }); gsap.set(m, { visibility: 'hidden' });
         this._modalOpen = false; this._modalBusy = false;
         (this._inert || []).forEach(el => { el.inert = false; });
@@ -116,6 +129,7 @@ export default class Portfolio {
       .to(m, { left: r.left, top: r.top, width: r.width, height: r.height, duration: 0.65, ease: 'power3.inOut' }, 0.1)
       .to(media, { height: r.height, duration: 0.65, ease: 'power3.inOut' }, 0.1)
       .to(bd, { autoAlpha: 0, duration: 0.4 }, 0.35);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) tl.progress(1);
   }
 
   go(i, e) {
@@ -139,122 +153,64 @@ export default class Portfolio {
   }
 
   init() {
-    gsap.registerPlugin(ScrollTrigger, MotionPathPlugin, SplitText);
+    gsap.registerPlugin(ScrollTrigger, SplitText);
     ScrollTrigger.config({ ignoreMobileResize: true });
     const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
     const $ = (s, r = document) => r.querySelector(s);
     const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 
     this.ctx = gsap.context(() => {
-      // Rail: dot rides the path via MotionPath, scrubbed to page scroll
-      const rail = $('[data-rail]'), path = $('[data-rail-path]'), dot = $('[data-rail-dot]');
-      const setPath = () => path.setAttribute('d', 'M7 0 L7 ' + rail.offsetHeight);
-      setPath();
-      ScrollTrigger.addEventListener('refreshInit', setPath);
-      const dotTween = gsap.to(dot, { motionPath: { path, align: path, alignOrigin: [0.5, 0.5] }, ease: 'none', paused: true });
-      const fill = $('[data-rail-fill]');
-      const proxy = { p: 0 };
-      const apply = () => gsap.set(fill, { scaleY: proxy.p });
-      // The dot only travels once a section is actually reached; the line fill tracks scroll continuously
-      const dotP = { p: 0 };
-      this._activeSec = -1;
-      const railPos = [0, 0.25, 0.5, 0.75, 1];
-      // While scrolling: only switch when a section start is actually reached (either direction).
-      // On scroll end: settle to whichever section range we're in.
-      const arrive = (y, settled) => {
-        const S = this.secStarts; if (!S) return;
-        let a = -1;
-        if (settled && (this.props.snap ?? true) && !reduce) {
-          // Ignore pauses mid-gesture: only settle once the page has come to rest on a snap point
-          const max = ScrollTrigger.maxScroll(window);
-          if (!(this.snapPts || []).some(p => Math.abs(p * max - y) <= 4)) return;
-        }
-        if (settled) S.forEach((s, k) => { if (y >= s - 4) a = k; });
-        else S.forEach((s, k) => { if (Math.abs(y - s) <= 4) a = k; });
-        if (a < 0 || a === this._activeSec) return;
-        this._activeSec = a;
-        gsap.to(dotP, { p: railPos[a], duration: 0.6, ease: 'power3.inOut', overwrite: true, onUpdate: () => dotTween.progress(dotP.p) });
-        $$('[data-stop]').forEach((el, k) => (k === a ? el.setAttribute('aria-current', 'true') : el.removeAttribute('aria-current')));
-        $$('[data-stop-dot]').forEach((el, k) => gsap.to(el, { backgroundColor: k === a ? '#2563eb' : k < a ? '#9ca3af' : '#f9fafb', borderColor: k === a ? '#2563eb' : '#9ca3af', scale: k === a ? 1.3 : 1, duration: 0.35, delay: k === a ? 0.45 : 0, overwrite: true }));
-      };
-      const railP = y => {
-        const S = this.railS; if (!S) return 0;
-        if (y <= S[0][0]) return S[0][1];
-        for (let k = 1; k < S.length; k++) if (y <= S[k][0]) {
-          const [y0, p0] = S[k - 1], [y1, p1] = S[k];
-          return y1 === y0 ? p1 : p0 + (p1 - p0) * (y - y0) / (y1 - y0);
-        }
-        return S[S.length - 1][1];
-      };
-      ScrollTrigger.create({ start: 0, end: 'max', onUpdate: s => {
-        gsap.to(proxy, { p: railP(s.scroll()), duration: 0.5, ease: 'power2.out', overwrite: true, onUpdate: apply });
-        arrive(s.scroll(), false);
-      } });
-      ScrollTrigger.addEventListener('scrollEnd', () => arrive(window.scrollY, true));
-      this._dotTween = dotTween; this._railSync = () => { dotTween.invalidate(); proxy.p = railP(window.scrollY); apply(); dotTween.progress(dotP.p); this._activeSec = -1; arrive(window.scrollY, true); };
+      // Horizontal scroller: pins a section and slides its track sideways while the page scrolls,
+      // with the 01 / 0N counter.
+      // Used by Projects (cards) and Toolbelt (panels); everything is scoped to its own section.
+      const makeHScroll = (sec, itemSel) => {
+        const track = $('[data-track]', sec), clip = $('[data-clip]', sec);
+        const items = $$(itemSel, track);
+        const hcount = $('[data-hcount]', sec);
+        const dist = () => Math.max(0, track.scrollWidth - clip.clientWidth);
+        const pad = () => parseFloat(getComputedStyle(track).paddingLeft) || 0;
+        const cardX = c => c.offsetLeft - pad();
+        const h = { sec, items, dist, cardX };
 
-      const stops = $$('[data-stop]');
-
-      // Projects: pin and scroll the track horizontally
-      const hsec = $('[data-sec="1"]'), track = $('[data-track]');
-      const cards = $$('[data-card]', track);
-      const hcount = $('[data-hcount]');
-      const branch = $('[data-branch]'), bFill = $('[data-branch-fill]'), bDot = $('[data-branch-dot]');
-      const clip = $('[data-clip]');
-      const dist = () => Math.max(0, track.scrollWidth - clip.clientWidth);
-      const pad = () => parseFloat(getComputedStyle(track).paddingLeft) || 0;
-      const cardX = c => c.offsetLeft - pad();
-      this.dist = dist;
-      const comp = this;
-      this.fillBStops = pr => (this.bStopFr || []).forEach((fr, k) => {
-        const el = this.bStopEls[k]; if (!el || fr == null) return;
-        const st = Math.abs(fr - pr) < 0.001 ? 'cur' : fr < pr ? 'past' : 'off';
-        if (el._on === st) return; el._on = st;
-        gsap.to(el, { backgroundColor: st === 'cur' ? '#2dd4bf' : st === 'past' ? '#9ca3af' : '#f9fafb', borderColor: st === 'cur' ? '#2dd4bf' : '#9ca3af', scale: st === 'cur' ? 1.3 : 1, duration: 0.35, delay: st === 'cur' ? 0.45 : 0, overwrite: true });
-      });
-      const htween = gsap.to(track, {
-        x: () => -dist(), ease: 'none',
-        onUpdate: function () {
-          const pr = this.progress();
-          gsap.set(bFill, { scaleX: pr });
-          // Teal dot hops to a project stop only once that card is reached; it emerges from the blue dot
-          // Switch only when a stop is actually reached, in either direction
-          let tgt = comp._bTgt === undefined ? 0 : comp._bTgt;
-          if (pr < 0.005) tgt = 0;
-          (comp.bStopFr || []).forEach(fr => { if (fr != null && fr > 0.001 && Math.abs(pr - fr) < 0.008) tgt = fr; });
-          if (tgt !== comp._bTgt) {
-            comp._bTgt = tgt;
-            gsap.to(bDot, { x: tgt * branch.offsetWidth, scale: tgt > 0 ? 1 : 0, opacity: tgt > 0 ? 1 : 0, duration: 0.6, ease: 'power3.inOut', overwrite: true });
-            comp.fillBStops(tgt);
+        h.tween = gsap.to(track, {
+          x: () => -dist(), ease: 'none',
+          onUpdate: function () {
+            // Counter shows whichever item is closest to its resting position
+            const pr = this.progress();
+            const d = dist(), x = pr * d, off = c => Math.min(d, cardX(c));
+            let best = 0;
+            items.forEach((c, k) => { if (Math.abs(off(c) - x) < Math.abs(off(items[best]) - x)) best = k; });
+            hcount.textContent = String(best + 1).padStart(2, '0');
+          },
+          scrollTrigger: {
+            trigger: sec, start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 0.6, invalidateOnRefresh: true
           }
-          const d = dist(), x = pr * d, off = c => Math.min(d, cardX(c));
-          let best = 0;
-          cards.slice(0, comp.projects.length).forEach((c, k) => { if (Math.abs(off(c) - x) < Math.abs(off(cards[best]) - x)) best = k; });
-          hcount.textContent = String(best + 1).padStart(2, '0');
-        },
-        scrollTrigger: {
-          trigger: hsec, start: 'top top', end: () => '+=' + dist(), pin: true, scrub: 0.6, invalidateOnRefresh: true
-        }
-      });
-      this.hST = htween.scrollTrigger;
+        });
+        h.st = h.tween.scrollTrigger;
 
-      if (!reduce) cards.forEach(c => gsap.from(c, {
-        y: 40, opacity: 0.25, duration: 0.7, ease: 'power3.out',
-        scrollTrigger: { containerAnimation: htween, trigger: c, start: 'left 92%', toggleActions: 'play none none reverse' }
-      }));
-      this.cards = cards;
-      // Keyboard focus on a card: bring it on screen by scrolling to its snap point (the browser would
-      // otherwise scroll the overflow-hidden clip sideways and desync the track)
-      track.addEventListener('focusin', e => {
-        const c = e.target.closest('[data-card]'); if (!c) return;
-        clip.scrollLeft = 0; requestAnimationFrame(() => { clip.scrollLeft = 0; });
-        const y = this.hST.start + Math.min(dist(), cardX(c));
-        if (Math.abs(window.scrollY - y) > 2) window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
-      });
+        if (!reduce) items.forEach(c => gsap.from(c, {
+          y: 40, opacity: 0.25, duration: 0.7, ease: 'power3.out',
+          scrollTrigger: { containerAnimation: h.tween, trigger: c, start: 'left 92%', toggleActions: 'play none none reverse' }
+        }));
+        // Keyboard focus on an item: bring it on screen by scrolling to its snap point (the browser would
+        // otherwise scroll the overflow-hidden clip sideways and desync the track)
+        track.addEventListener('focusin', e => {
+          const c = e.target.closest(itemSel); if (!c) return;
+          clip.scrollLeft = 0; requestAnimationFrame(() => { clip.scrollLeft = 0; });
+          const y = h.st.start + Math.min(dist(), cardX(c));
+          if (Math.abs(window.scrollY - y) > 2) window.scrollTo({ top: y, behavior: reduce ? 'auto' : 'smooth' });
+        });
+        // Where each item snaps into place
+        h.snapPoints = () => { const d = dist(); return d > 0 ? items.map(c => h.st.start + Math.min(d, cardX(c))) : []; };
+        return h;
+      };
+
+      const hs = this.hs = [makeHScroll($('[data-sec="1"]'), '[data-card]')];
+      this.hST = hs[0].st; this.dist = hs[0].dist; this.cards = hs[0].items;
 
       gsap.set('[data-marker]', { scaleX: 0, rotation: -1, transformOrigin: 'left center' });
 
-      // Hero intro: name + description slide out of the vanishing point (40px right of the rail), buttons from the right
+      // Hero intro: name + description slide out of the vanishing point at the left edge, buttons from the right
       if (!reduce) {
         const clip = $('[data-hero-clip]');
         const fade = 'linear-gradient(to right,transparent 0,rgba(0,0,0,.08) 24px,rgba(0,0,0,.3) 56px,rgba(0,0,0,.65) 88px,#000 120px)';
@@ -268,12 +224,13 @@ export default class Portfolio {
 
       this.pos = [];
       $$('[data-sec]').forEach((sec, i) => {
-        const stop = stops[i];
-        this.pos[i] = i === 1 ? this.hST : ScrollTrigger.create({ trigger: sec, start: 'top top' });
-        const tl = gsap.timeline({ paused: true })
-          .to($('[data-marker]', sec), { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, i === 0 && !reduce ? 1.4 : 0.15);
+        const h = i === 1 ? hs[0] : null;
+        this.pos[i] = h ? h.st : ScrollTrigger.create({ trigger: sec, start: 'top top' });
+        const tl = gsap.timeline({ paused: true }), marker = $('[data-marker]', sec);
+        // Not every section has a marker (Toolbelt has no visible title)
+        if (marker) tl.to(marker, { scaleX: 1, duration: 0.7, ease: 'power3.inOut' }, i === 0 && !reduce ? 1.4 : 0.15);
         ScrollTrigger.create({
-          trigger: sec, start: 'top 55%', end: i === 1 ? () => '+=' + (innerHeight * 1.1 + dist()) : 'bottom 45%',
+          trigger: sec, start: 'top 55%', end: h ? () => '+=' + (innerHeight * 1.1 + h.dist()) : 'bottom 45%',
           onToggle: s => (s.isActive ? tl.play() : tl.reverse())
         });
         const rev = $$('[data-reveal]', sec);
@@ -315,38 +272,19 @@ export default class Portfolio {
       ScrollTrigger.create({ trigger: '[data-sec="4"]', start: 'top 40%', onEnter: () =>
         gsap.fromTo('[data-resume]', { boxShadow: '0 0 0 0 rgba(37,99,235,.55)' }, { boxShadow: '0 0 0 16px rgba(37,99,235,0)', duration: 1, ease: 'power2.out' }) });
 
-      // Rail stops sit where each section actually starts in the scroll
+      // Snap points: section starts, the end of any section taller than the screen, and each horizontal item
       const layout = () => {
         const max = ScrollTrigger.maxScroll(window) || 1;
-        const P = this.pos;
-        this.secStarts = [0, this.hST.start, P[2].start, P[3].start, Math.min(P[4].start, max)];
-        this.railS = [[0, 0], [this.hST.start, 0.25], [this.hST.end, 0.25], [P[2].start, 0.5], [P[3].start, 0.75], [Math.min(P[4].start, max), 1]];
-        this._railSync();
         const pts = this.pos.map(p => p.start);
         // Sections taller than the screen (common on phones) get an end snap point and scroll freely in between
+        // (the pinned Projects section is always exactly one screen tall)
         this.tall = [];
         [0, 2, 3, 4].forEach(k => {
-          const el = $('[data-sec="' + k + '"]'), s = this.pos[k].start, e = Math.min(max, s + el.offsetHeight - innerHeight);
+          // End point = where the section's bottom meets the bottom of the screen, measured from its real top
+          const el = $('[data-sec="' + k + '"]'), s = this.pos[k].start, top = el.getBoundingClientRect().top + window.scrollY, e = Math.min(max, top + el.offsetHeight - innerHeight);
           if (el.offsetHeight > innerHeight + 40) { pts.push(e); this.tall.push([s, e]); }
         });
-        const d = dist();
-        if (d > 0) cards.forEach(c => pts.push(this.hST.start + Math.min(d, cardX(c))));
-        // One branch stop per card, at the point where that card snaps; cards that clamp to the end share it
-        this.bStopEls = $$('[data-bstop]');
-        const seen = new Set();
-        this.bStopFr = cards.map((c, k) => {
-          if (k >= this.projects.length) return null;
-          const fr = d > 0 ? Math.min(1, cardX(c) / d) : 0, key = fr.toFixed(3);
-          if (seen.has(key)) return null; seen.add(key); return fr;
-        });
-        this.bStopEls.forEach((el, k) => {
-          const fr = this.bStopFr[k];
-          el.style.display = fr == null || fr < 0.001 ? 'none' : '';
-          if (fr != null) el.style.left = fr * 100 + '%';
-          el._on = undefined;
-        });
-        this._bTgt = undefined;
-        if (this.hST.animation) this.hST.animation.vars.onUpdate.call(this.hST.animation);
+        hs.forEach(h => { pts.push(...h.snapPoints()); h.st.animation.vars.onUpdate.call(h.st.animation); });
         this.snapPts = pts.map(v => v / max).sort((a, b) => a - b);
       };
       ScrollTrigger.addEventListener('refresh', layout);

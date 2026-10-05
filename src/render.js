@@ -30,12 +30,6 @@ export function renderPage(projects, toolbelt) {
   const tag = makeTag(toolbelt);
   const $ = s => document.querySelector(s);
 
-  // Rail stops
-  $('[data-rail-nav]').insertAdjacentHTML('beforeend', config.labels.map((label, i) => `
-    <button data-stop="" data-go="${i}" aria-label="Go to ${esc(label)}" style="position:absolute;left:0;top:${(i / (config.labels.length - 1)) * 100}%;transform:translateY(-50%);display:flex;align-items:center;gap:12px;background:none;border:0;padding:6px 0;cursor:pointer;pointer-events:auto">
-      <span data-stop-dot="" aria-hidden="true" style="width:10px;height:10px;margin-left:2px;border-radius:50%;border:2px solid #9ca3af;background:#f9fafb;box-sizing:border-box"></span>
-    </button>`).join(''));
-
   // Hero photo filter
   const heroImg = $('[data-hero-img]');
   heroImg.style.filter = HERO_FILTERS[config.heroFilter] || 'none';
@@ -43,41 +37,38 @@ export function renderPage(projects, toolbelt) {
     '<div aria-hidden="true" style="position:absolute;inset:0;background:#1d4ed8;mix-blend-mode:color;opacity:.55;pointer-events:none"></div>' +
     '<div aria-hidden="true" style="position:absolute;inset:0;background:#5eead4;mix-blend-mode:soft-light;opacity:.25;pointer-events:none"></div>');
 
-  // Branch stops: one per project
-  $('[data-branch-dot]').insertAdjacentHTML('beforebegin', projects.map(() =>
-    '<span data-bstop="" style="position:absolute;left:0;top:2px;width:10px;height:10px;margin-left:-5px;border-radius:50%;border:2px solid #9ca3af;background:#f9fafb;box-sizing:border-box"></span>').join(''));
-
-  $('[data-ptotal]').textContent = pad2(projects.length);
+  // Projects horizontal scroller: item total for the 01 / 0N counter
+  const P = $('#projects');
+  P.querySelector('[data-ptotal]').textContent = pad2(projects.length);
 
   applyLayout();
 
   // Project cards
-  $('[data-track]').innerHTML = projects.map((p, i) => {
+  P.querySelector('[data-track]').innerHTML = projects.map((p, i) => {
     const media = p.image
       ? `<img src="${esc(p.image)}" alt="${esc(p.imageAlt || p.name)}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block">`
       : `<div class="slot-empty" aria-hidden="true">${SLOT_ICON}<div class="cap">Drop a screenshot of ${esc(p.name)}</div><div class="ring"></div></div>`;
-    // A real link goes out in a new tab; otherwise the title is the button that opens the details dialog
-    const href = p.link ? `href="${esc(p.link)}" target="_blank" rel="noopener" data-card-link=""` : 'href="#" role="button" aria-haspopup="dialog"';
-    const newTab = p.link ? '<span class="sr-only"> (opens in a new tab)</span>' : '';
+    // The title is the button that opens the project's details dialog (a project's link lives inside the dialog)
+    const href = 'href="#" role="button" aria-haspopup="dialog" aria-controls="project-dialog"';
     return `
       <article data-card="" data-index="${i}" aria-labelledby="card-title-${i}" style="cursor:pointer;flex:none;position:relative;width:clamp(320px,62vw,960px);height:100%;border-radius:12px;overflow:hidden;background:#e5e7eb;box-shadow:0 16px 40px rgba(31,41,55,.14)">
         ${media}
         <div aria-hidden="true" style="position:absolute;left:0;right:0;bottom:0;height:70%;background:linear-gradient(to top,rgba(17,24,39,.92) 0%,rgba(17,24,39,.6) 40%,rgba(17,24,39,0) 100%);pointer-events:none"></div>
         <div style="position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;gap:12px;padding:clamp(20px,2.6vw,36px);pointer-events:none">
-          <div style="display:flex;align-items:baseline;gap:14px"><span aria-hidden="true" style="font:500 12px 'JetBrains Mono',monospace;color:#f3f4f6">${pad2(i + 1)}</span><h3 id="card-title-${i}" class="h-reset"><a ${href} data-card-title="" class="hv-card-title" style="font:700 clamp(24px,2.6vw,38px)/1.15 'Inter';letter-spacing:-.02em;color:#ffffff;pointer-events:auto">${esc(p.name)}${newTab} <span aria-hidden="true">→</span></a></h3></div>
+          <div style="display:flex;align-items:baseline;gap:14px"><span aria-hidden="true" style="font:500 12px 'JetBrains Mono',monospace;color:#f3f4f6">${pad2(i + 1)}</span><h3 id="card-title-${i}" class="h-reset"><a ${href} data-card-title="" class="hv-card-title" style="font:700 clamp(24px,2.6vw,38px)/1.15 'Inter';letter-spacing:-.02em;color:#ffffff;pointer-events:auto">${esc(p.name)} <span aria-hidden="true">→</span></a></h3></div>
           <p style="margin:0;font-size:17px;line-height:1.5;color:#e5e7eb">${esc(p.desc)}</p>
           <ul role="list" aria-label="Skills" style="display:flex;flex-wrap:wrap;gap:8px">${p.skills.map(s => chip(tag(s), '5px 12px', '14px')).join('')}</ul>
         </div>
       </article>`;
   }).join('');
 
-  // Toolbelt
-  $('[data-toolbelt]').innerHTML = toolbelt.map(g => `
-    <div data-reveal="" style="display:flex;flex-direction:column;gap:18px;border-top:1.5px solid #1f2937;padding-top:18px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline"><h3 style="margin:0;font:700 24px 'Inter';letter-spacing:-.01em">${esc(g.title)}</h3><span style="font:500 12px 'JetBrains Mono',monospace;color:#6b7280"><span aria-hidden="true">${pad2(g.items.length)}</span><span class="sr-only">${g.items.length} tools</span></span></div>
+  // Toolbelt: one panel per group in the grid
+  $('[data-toolbelt]').innerHTML = toolbelt.map((g, i) => `
+    <article data-panel="" data-reveal="" aria-labelledby="tb-title-${i}" style="min-width:0;display:flex;flex-direction:column;gap:18px;border-top:1.5px solid #1f2937;padding-top:18px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline"><h3 id="tb-title-${i}" style="margin:0;font:700 24px 'Inter';letter-spacing:-.01em">${esc(g.title)}</h3><span style="font:500 12px 'JetBrains Mono',monospace;color:#6b7280"><span aria-hidden="true">${pad2(g.items.length)}</span><span class="sr-only">${g.items.length} tools</span></span></div>
       <ul role="list" aria-label="${esc(g.title)} tools" style="display:flex;flex-wrap:wrap;gap:8px">${g.items.map(t =>
         `<li data-chip="" style="background:${g.chipBg};color:${g.chipInk};border-radius:999px;padding:7px 14px;font-size:15px;font-weight:500">${esc(t)}</li>`).join('')}</ul>
-    </div>`).join('');
+    </article>`).join('');
 }
 
 // Fills the modal with one project's content (the design's `modal` render values)
@@ -93,22 +84,38 @@ export function renderModal(p, i, tab, toolbelt) {
   const img = q('[data-modal-img]');
   img.style.display = p.image ? 'block' : 'none';
   if (p.image) { img.src = p.image; img.alt = p.imageAlt || p.name; } else img.removeAttribute('src');
-  const list = q('[data-tablist]');
+  const link = q('[data-modal-link]');
+  link.style.display = p.link ? 'inline-block' : 'none';
+  if (p.link) link.href = p.link; else link.removeAttribute('href');
+
+  const list = q('[data-tablist]'), panel = q('[data-tab-panel]');
   list.querySelectorAll('[data-tab]').forEach(b => b.remove());
-  q('[data-tab-ink]').insertAdjacentHTML('beforebegin', p.tabs.map((t, k) =>
-    `<button data-tab="" data-tab-index="${k}" id="tab-${k}" role="tab" aria-selected="false" aria-controls="tab-panel" tabindex="-1" class="hv-tab" style="background:none;border:0;padding:0 0 12px;cursor:pointer;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6b7280">${esc(t.label)}</button>`).join(''));
+  // A single tab isn't a choice: its label stays as decoration and the panel is ordinary content
+  const single = p.tabs.length < 2;
+  if (single) {
+    ['role', 'aria-label'].forEach(a => list.removeAttribute(a)); list.setAttribute('aria-hidden', 'true');
+    ['role', 'tabindex', 'aria-labelledby'].forEach(a => panel.removeAttribute(a));
+  } else {
+    list.setAttribute('role', 'tablist'); list.setAttribute('aria-label', 'Project details'); list.removeAttribute('aria-hidden');
+    panel.setAttribute('role', 'tabpanel'); panel.setAttribute('tabindex', '0');
+  }
+  const TAB = "background:none;border:0;padding:0 0 12px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6b7280";
+  q('[data-tab-ink]').insertAdjacentHTML('beforebegin', p.tabs.map((t, k) => single
+    ? `<span data-tab="" data-tab-index="0" style="${TAB};display:inline-block">${esc(t.label)}</span>`
+    : `<button data-tab="" data-tab-index="${k}" id="tab-${k}" role="tab" aria-selected="false" aria-controls="tab-panel" tabindex="-1" class="hv-tab" style="${TAB};cursor:pointer">${esc(t.label)}</button>`).join(''));
   renderTab(p, tab);
 }
 
 export function renderTab(p, tab) {
   const t = Math.min(tab, p.tabs.length - 1);
   document.querySelectorAll('[data-tab]').forEach((b, k) => {
+    b.style.color = k === t ? '#1f2937' : '#6b7280';
+    if (b.tagName !== 'BUTTON') return;  // single-tab label: decoration only
     b.setAttribute('aria-selected', String(k === t));
     b.tabIndex = k === t ? 0 : -1;
-    b.style.color = k === t ? '#1f2937' : '#6b7280';
   });
   const panel = document.querySelector('[data-tab-panel]');
-  panel.setAttribute('aria-labelledby', 'tab-' + t);
+  if (p.tabs.length > 1) panel.setAttribute('aria-labelledby', 'tab-' + t);
   panel.innerHTML = p.tabs[t].paras.map(para =>
     `<p style="margin:0;font-size:17px;line-height:1.65;color:#374151;text-wrap:pretty">${esc(para)}</p>`).join('');
 }
