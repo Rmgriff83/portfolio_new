@@ -102,7 +102,7 @@ export function renderModal(p, i, tab, toolbelt) {
   const TAB = "background:none;border:0;padding:0 0 12px;font:500 12px 'JetBrains Mono',monospace;letter-spacing:.1em;text-transform:uppercase;color:#6b7280";
   q('[data-tab-ink]').insertAdjacentHTML('beforebegin', p.tabs.map((t, k) => single
     ? `<span data-tab="" data-tab-index="0" style="${TAB};display:inline-block">${esc(t.label)}</span>`
-    : `<button data-tab="" data-tab-index="${k}" id="tab-${k}" role="tab" aria-selected="false" aria-controls="tab-panel" tabindex="-1" class="hv-tab" style="${TAB};cursor:pointer">${esc(t.label)}</button>`).join(''));
+    : `<button data-tab="" data-tab-index="${k}" id="tab-${k}" role="tab" aria-selected="false" aria-controls="tab-panel" class="hv-tab" style="${TAB};cursor:pointer">${esc(t.label)}</button>`).join(''));
   renderTab(p, tab);
 }
 
@@ -111,8 +111,8 @@ export function renderTab(p, tab) {
   document.querySelectorAll('[data-tab]').forEach((b, k) => {
     b.style.color = k === t ? '#1f2937' : '#6b7280';
     if (b.tagName !== 'BUTTON') return;  // single-tab label: decoration only
+    // Every tab stays in the Tab order (arrow keys / Home / End also move between them)
     b.setAttribute('aria-selected', String(k === t));
-    b.tabIndex = k === t ? 0 : -1;
   });
   const panel = document.querySelector('[data-tab-panel]');
   if (p.tabs.length > 1) panel.setAttribute('aria-labelledby', 'tab-' + t);

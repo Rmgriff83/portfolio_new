@@ -89,3 +89,14 @@ main:focus,[data-sec]:focus,[data-tab-panel]:focus:not(:focus-visible){outline:n
 /* The dialog title takes focus when the popup opens; only show a ring for keyboard focus */
 #modal-title:focus:not(:focus-visible){outline:none}
 #modal-title:focus-visible{outline-color:#5eead4}
+
+/* Top bar: the active section's link gets a highlighter swipe like the section titles' markers (desktop) */
+@media (min-width:641px){
+  [data-topbar] nav a{position:relative;isolation:isolate}
+  [data-topbar] nav a::before{content:"";position:absolute;left:-.12em;right:-.12em;bottom:.05em;height:.5em;background:#5eead4;border-radius:2px;z-index:-1;transform:scaleX(0) rotate(-1deg);transform-origin:left center;transition:transform .55s cubic-bezier(.65,0,.35,1)}
+  [data-topbar] nav a.is-active::before{transform:scaleX(1) rotate(-1deg)}
+  [data-topbar] nav a.is-active:not(:hover){color:#1f2937}
+}
+@media (min-width:641px) and (prefers-reduced-motion:reduce){
+  [data-topbar] nav a::before{transition:none}
+}

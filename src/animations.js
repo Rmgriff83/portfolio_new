@@ -289,6 +289,21 @@ export default class Portfolio {
       };
       ScrollTrigger.addEventListener('refresh', layout);
 
+      // Top bar: mark the link for the section in view (nothing in the hero, where the bar is hidden)
+      const navLinks = $$('[data-topbar] nav [data-go]');
+      const setNav = () => {
+        const y = window.scrollY + innerHeight * 0.4;
+        let a = 0;
+        this.pos.forEach((p, k) => { if (y >= p.start) a = k; });
+        navLinks.forEach(l => {
+          const on = +l.dataset.go === a;
+          l.classList.toggle('is-active', on);
+          on ? l.setAttribute('aria-current', 'true') : l.removeAttribute('aria-current');
+        });
+      };
+      ScrollTrigger.create({ start: 0, end: 'max', onUpdate: setNav });
+      ScrollTrigger.addEventListener('refresh', setNav);
+
       // GSAP snapping: section starts + each project card
       if (!reduce) ScrollTrigger.create({
         start: 0, end: 'max',
